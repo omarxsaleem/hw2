@@ -12,7 +12,7 @@ public:
     virtual ~Product();
 
     /**
-     * Returns the appropriate keywords that this product should be associated with
+     * Returns the appropriate keywords at this product should be associated with
      */
     virtual std::set<std::string> keywords() const = 0;
 

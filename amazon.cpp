@@ -9,6 +9,7 @@
 #include "db_parser.h"
 #include "product_parser.h"
 #include "util.h"
+#include "mydatastore.h"
 
 using namespace std;
 struct ProdNameSorter {
@@ -29,7 +30,7 @@ int main(int argc, char* argv[])
      * Declare your derived DataStore object here replacing
      *  DataStore type to your derived type
      ****************/
-    DataStore ds;
+    MyDataStore ds;
 
 
 
@@ -88,7 +89,9 @@ int main(int argc, char* argv[])
                     terms.push_back(term);
                 }
                 hits = ds.search(terms, 1);
+                // cout << "after search" << endl;
                 displayProducts(hits);
+                // cout << "after display" << endl;
             }
             else if ( cmd == "QUIT") {
                 string filename;
@@ -98,12 +101,32 @@ int main(int argc, char* argv[])
                     ofile.close();
                 }
                 done = true;
+                return 0;
             }
 	    /* Add support for other commands here */
-
-
-
-
+        else if(cmd == "ADD"){
+            string username;
+            int prod;
+            if(ss >> username && ss >> prod){
+                for(size_t i = 0; i < hits.size(); i++){
+                    // if(hits[i]->getName() == prod){
+                        ds.add_to_cart(username, hits[prod-1]);
+                    // }
+                }
+            }
+        }else if(cmd == "VIEWCART"){
+            string username;
+            if(ss >> username){
+                User* selectedUser = ds.getUserFromUsername(username);
+                ds.view_cart(username);
+                // displayProducts(ds.usersToCart_[selectedUser]);
+            }
+        }else if(cmd == "BUYCART"){
+            string username;
+            if(ss >> username){
+                ds.buy_cart(username);
+            }
+        }
             else {
                 cout << "Unknown command" << endl;
             }
@@ -115,6 +138,7 @@ int main(int argc, char* argv[])
 
 void displayProducts(vector<Product*>& hits)
 {
+    // cout << "inside display" << endl;
     int resultNo = 1;
     if (hits.begin() == hits.end()) {
     	cout << "No results found!" << endl;
